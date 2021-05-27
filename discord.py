@@ -8,6 +8,7 @@ from discord.utils import get
 from discord import FFmpegPCMAudio
 import asyncio
 import time
+import os
 
 bot = commands.Bot(command_prefix=',')
 
@@ -320,4 +321,5 @@ async def 스킵(ctx):
         await ctx.send("목록에 노래가 2개 이상 없네요..")
 
 
-bot.run('ODQ3Mzk5NTk4NDE5MjE0MzY4.YK9gYA.u0JUnGyXuNX2zZ7M6cLImbRg4HI')
+access_token - os.environ["BOT_TOKEN"]
+bot.run('access_token')
