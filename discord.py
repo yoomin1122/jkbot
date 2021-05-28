@@ -8,7 +8,8 @@ from discord.utils import get
 from discord import FFmpegPCMAudio
 import asyncio
 import time
-import os
+import datetime
+import pytz
 
 bot = commands.Bot(command_prefix=',')
 
@@ -27,9 +28,8 @@ async def on_ready():
 
 
 @bot.command()
-async def 따라하기(ctx, *, text):
+async def 따라해(ctx, *, text):
     await ctx.send(text)
-
 
 @bot.command()
 async def 입장(ctx):
@@ -85,7 +85,7 @@ async def 재생(ctx, *, msg):
                           'options': '-vn'}
 
         chromedriver_dir = r"C:\Users\rjylo\OneDrive\바탕 화면\프로그래밍 연습\ffmpeg\chromedriver.exe"
-        driver = webdriver.Chrome(chromedriver_dir, options = options)
+        driver = webdriver.Chrome(chromedriver_dir, options=options)
         driver.get("https://www.youtube.com/results?search_query=" + msg + "+lyrics")
         source = driver.page_source
         bs = bs4.BeautifulSoup(source, 'lxml')
@@ -101,40 +101,47 @@ async def 재생(ctx, *, msg):
             info = ydl.extract_info(url, download=False)
         URL = info['formats'][0]['url']
         await ctx.send(
-            embed=discord.Embed(title="노래 재생", description="현재 " + musicnow[0] + "을(를) 재생하고 있습니다.", color=0x00ff00))
+            embed=discord.Embed(title="노래 재생", description="현재 " + entireText + "을(를) 재생하고 있습니다.", color=0x00ff00))
         vc.play(FFmpegPCMAudio(URL, **FFMPEG_OPTIONS))
     else:
         await ctx.send("이미 노래가 재생 중이라 노래를 재생할 수 없어요!")
+
+
 @bot.command()
 async def 일시정지(ctx):
     if vc.is_playing():
         vc.pause()
-        await ctx.send(embed = discord.Embed(title= "일시정지", description = musicnow[0] + "을(를) 일시정지 했습니다.", color = 0x00ff00))
+        await ctx.send(embed=discord.Embed(title="일시정지", description=entireText + "을(를) 일시정지 했습니다.", color=0x00ff00))
     else:
         await ctx.send("지금 노래가 재생되지 않네요.")
+
 
 @bot.command()
 async def 다시재생(ctx):
     try:
         vc.resume()
     except:
-         await ctx.send("지금 노래가 재생되지 않네요.")
+        await ctx.send("지금 노래가 재생되지 않네요.")
     else:
-         await ctx.send(embed = discord.Embed(title= "다시재생", description = musicnow[0]  + "을(를) 다시 재생했습니다.", color = 0x00ff00))
+        await ctx.send(embed=discord.Embed(title="다시재생", description=entireText + "을(를) 다시 재생했습니다.", color=0x00ff00))
+
 
 @bot.command()
 async def 노래끄기(ctx):
     if vc.is_playing():
         vc.stop()
-        await ctx.send(embed = discord.Embed(title= "노래끄기", description = musicnow[0]  + "을(를) 종료했습니다.", color = 0x00ff00))
+        await ctx.send(embed=discord.Embed(title="노래끄기", description=entireText + "을(를) 종료했습니다.", color=0x00ff00))
     else:
         await ctx.send("지금 노래가 재생되지 않네요.")
+
+
 @bot.command()
 async def 지금노래(ctx):
     if not vc.is_playing():
         await ctx.send("지금은 노래가 재생되지 않네요..")
     else:
-        await ctx.send(embed = discord.Embed(title = "지금노래", description = "현재 " + musicnow[0] + "을(를) 재생하고 있습니다.", color = 0x00ff00))
+        await ctx.send(
+            embed=discord.Embed(title="지금노래", description="현재 " + entireText + "을(를) 재생하고 있습니다.", color=0x00ff00))
 
 
 @bot.command()
@@ -168,7 +175,7 @@ async def 멜론차트(ctx):
         URL = info['formats'][0]['url']
         await ctx.send(
             embed=discord.Embed(title="노래 재생", description="현재 " + musicnow[0] + "을(를) 재생하고 있습니다.", color=0x00ff00))
-        vc.play(discord.FFmpegPCMAudio(URL,**FFMPEG_OPTIONS), after=lambda e: play_next(ctx))
+        vc.play(discord.FFmpegPCMAudio(URL, **FFMPEG_OPTIONS), after=lambda e: play_next(ctx))
     else:
         await ctx.send("이미 노래가 재생 중이라 노래를 재생할 수 없어요!")
 
@@ -307,6 +314,8 @@ async def 목록재생(ctx):
             play(ctx)
         else:
             await ctx.send("노래가 이미 재생되고 있어요!")
+
+
 @bot.command()
 async def 스킵(ctx):
     if len(user) > 1:
@@ -314,12 +323,36 @@ async def 스킵(ctx):
             vc.stop()
             global number
             number = 0
-            await ctx.send(embed = discord.Embed(title = "스킵", description = musicnow[1] + "을(를) 다음에 재생합니다!", color = 0x00ff00))
+            await ctx.send(embed=discord.Embed(title="스킵", description=musicnow[1] + "을(를) 다음에 재생합니다!", color=0x00ff00))
         else:
             await ctx.send("노래가 이미 재생되고 있어요!")
     else:
         await ctx.send("목록에 노래가 2개 이상 없네요..")
 
 
-access_token - os.environ["BOT_TOKEN"]
-bot.run('access_token')
+@bot.command()
+async def 명령어(ctx):
+    embed = discord.Embed(title="명령어 목록", description="부제목", timestamp=datetime.datetime.now(pytz.timezone('UTC')),
+                          color=0x00ff00)
+
+    embed.add_field(name="노래 명령어", value=",입장 봇이 들어옵니다. \n ,퇴장 봇이 나갑니다. \n ,url재생 (노래 url)  url을 이용하여 노래를 재생합니다 "
+                                         "\n ,재생 (노래제목) 노래 제목을 검색하여 노래를 재생시킵니다. \n ,스킵 노래를 스킵시킵니다. \n  ,"
+                                         "일시정지 노래를 일시정지 시킵니다. \n ,다시재생 일시정지된 노래를 다시 재생시킵니다. \n ,노래끄기 노래를 종료시킵니다. "
+                                         "\n ,멜론차트 멜론차트 노래를 재생시킵니다. \n ,대기열추가 대기열에 추가를 시킵니다. \n ,대기열삭제 대기열을 "
+                                         "삭제시킵니다. \n 목록 대기열 목록을 보여줍니다. \n ,목록초기화 대기열 목록을 초기화 시킵니다. \n ,"
+                                         "목록재생 목록에 있는 노래르 재생시킵니다. ")
+    embed.add_field(name="임베드 라인 2 - inline = false로 책정", value="라인 이름에 해당하는 값", inline=False)
+    embed.add_field(name="임베드 라인 3 - inline = true로 책정", value="라인 이름에 해당하는 값", inline=False)
+    embed.add_field(name="재깨봇 서버 링크", value="https://discord.gg/B6MjFDjz23", inline=False)
+
+    embed.set_footer(text="Bot Made by. 유민 #3295",
+                     icon_url="https://cafeskthumb-phinf.pstatic.net/MjAyMTAzMjZfNjIg/MDAxNjE2NzU1MTk4OTIx.ArpWwnZGlvBIbl9bmkz7c2wagWOVRC14hkF007EIuj4g.zEJnbM-BiiuE0GVhkTFG_Q75Nb9QFOOD0QD3v0194Ogg.PNG/%EA%B7%9C%EC%A0%95_%EC%8B%A0%EB%B2%84%EC%A0%84_PC_%EB%B0%B0%EB%84%88.png?type=w1080")
+    embed.set_thumbnail(
+        url="https://cafeskthumb-phinf.pstatic.net/MjAyMTAzMjZfNjIg/MDAxNjE2NzU1MTk4OTIx.ArpWwnZGlvBIbl9bmkz7c2wagWOVRC14hkF007EIuj4g.zEJnbM-BiiuE0GVhkTFG_Q75Nb9QFOOD0QD3v0194Ogg.PNG/%EA%B7%9C%EC%A0%95_%EC%8B%A0%EB%B2%84%EC%A0%84_PC_%EB%B0%B0%EB%84%88.png?type=w1080")
+    await ctx.channel.send(embed=embed)
+
+
+
+
+bot.run('ODQ3Mzk5NTk4NDE5MjE0MzY4.YK9gYA.u0JUnGyXuNX2zZ7M6cLImbRg4HI')
+
