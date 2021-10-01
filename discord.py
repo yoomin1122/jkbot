@@ -13,7 +13,7 @@ from discord.ext.commands import CommandNotFound
 from googleapiclient.discovery import build
 
 bot = commands.Bot(command_prefix=',')
-api_key = "AIzaSyBlucQspEhQWPSMr378mg63d8SK_FyMgCI"
+api_key = "Google_custom_search_api_key"
 bot.remove_command("help")
 
 
@@ -129,7 +129,7 @@ async def 구글(ctx, *, search):
     ran = randint(0, 9)
     resource = build("customsearch", "v1", developerKey=api_key).cse()
     result = resource.list(
-        q=f"{search}", cx="f10853740d3d5e759", searchType="image"
+        q=f"{search}", cx="cx", searchType="image"
     ).execute()
     url = result["items"][ran]["link"]
     embed1 = discord.Embed(title=f"`{search}`을(를) 검색했을때 결과입니다.", color=0xb5fb94)
