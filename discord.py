@@ -16,6 +16,7 @@ intents = discord.Intents.default()
 intents.members = True
 
 client = commands.Bot(command_prefix=[",", "재깨야 "], intents=intents)
+api_key = "api_key"
 client.remove_command("help")
 #pip install discord-py-slash-command
 @client.event
