@@ -18,7 +18,6 @@ intents.members = True
 client = commands.Bot(command_prefix=[",", "재깨야 "], intents=intents)
 api_key = "api_key"
 client.remove_command("help")
-#pip install discord-py-slash-command
 @client.event
 async def on_ready():
     status = cycle(["https://jkbot.xyz", ",명령어"])
@@ -63,12 +62,13 @@ async def 서버정보(ctx):
     embed.add_field(name="서버장", value=f'<@{owner}>', inline=False)
     embed.add_field(name="서버 아이디", value=id, inline=False)
     embed.add_field(name="서버 위치", value=region, inline=False)
-    embed.add_field(name="멤버수", value=memberCount, inline=False)
+    embed.add_field(name="역할 갯수", value=f"{len(ctx.guild.roles)}개", inline=False)
 
     await ctx.reply(embed=embed, mention_author=False)
 
 @client.command(aliases=["help", "도움", "commands", "도움말"])
-async def 명령어(ctx):
+async def 명령어(ctx, c:str=None):
+  if c is None:
     embed = discord.Embed(color=0xb5fb94)
     embed.set_author(name="명령어", icon_url="https://i.ibb.co/M71ftRF/image.jpg")
     embed.set_thumbnail(url=ctx.author.avatar_url)
@@ -78,7 +78,41 @@ async def 명령어(ctx):
     embed.add_field(name=":page_with_curl: 일반", value=f"내정보, 봇정보", inline=False)
     embed.add_field(name=":mag_right: 검색", value=f"유튜브, 이미지, 아바타", inline=False)
     embed.add_field(name=":desktop: 재깨봇 공식 사이트", value="[바로가기](https://jkbot.xyz)", inline=False)
-    await ctx.reply(embed=embed, mention_author=False)
+  elif c == "접두사":
+    embed = discord.Embed(color=0xb5fb94)
+    embed.set_author(name="접두사", icon_url="https://i.ibb.co/M71ftRF/image.jpg")
+    embed.set_thumbnail(url=ctx.author.avatar_url)
+    embed.add_field(name=":point_right: 접두사", value="접두사는 `,(쉼표)`와 `재깨야 `입니다", inline=False)
+  elif c == "서버관리":
+    embed = discord.Embed(color=0xb5fb94)
+    embed.set_author(name="서버관리", icon_url="https://i.ibb.co/M71ftRF/image.jpg")
+    embed.set_thumbnail(url=ctx.author.avatar_url)
+    embed.add_field(name=":loudspeaker: 서버관리", value="청소", inline=False)
+    embed.add_field(name="청소", value="청소 : 채팅을 청소해줍니다 (최대 99)", inline=False)
+  elif c == "놀이":
+    embed = discord.Embed(color=0xb5fb94)
+    embed.set_author(name="놀이", icon_url="https://i.ibb.co/M71ftRF/image.jpg")
+    embed.set_thumbnail(url=ctx.author.avatar_url)
+    embed.add_field(name=":video_game: 놀이", value=f"따라해, 뽑기", inline=False)
+    embed.add_field(name="따라해", value=f"채팅친걸 따라합니다", inline=False)
+    embed.add_field(name="뽑기", value=f"1부터 9까지 랜덤으로 숫자를 나타냅니다.", inline=False)
+  elif c == "일반":
+    embed = discord.Embed(color=0xb5fb94)
+    embed.set_author(name="일반", icon_url="https://i.ibb.co/M71ftRF/image.jpg")
+    embed.set_thumbnail(url=ctx.author.avatar_url)
+    embed.add_field(name=":page_with_curl: 일반", value=f"내정보, 봇정보", inline=False)
+    embed.add_field(name="내정보", value=f"자신의 정보를 보여줍니다.", inline=False)
+    embed.add_field(name="봇정보", value=f"재깨봇의 정보를 보여줍니다.", inline=False)
+  elif c == "검색":
+    embed = discord.Embed(color=0xb5fb94)
+    embed.set_author(name="검색", icon_url="https://i.ibb.co/M71ftRF/image.jpg")
+    embed.set_thumbnail(url=ctx.author.avatar_url)
+    embed.add_field(name=":mag_right: 검색", value=f"유튜브, 이미지, 아바타", inline=False)
+    embed.add_field(name="유튜브", value=f"유튜브에 검색어를 검색합니다.", inline=False)
+    embed.add_field(name="이미지", value=f"구글에 검색어를 검색하여 사진을 보여줍니다.", inline=False)
+    embed.add_field(name="아바타", value=f"태그한 사람의 프로필사진을 보여줍니다.", inline=False)
+  else: return await ctx.reply(f"`{c}`라는 카테고리는 존재하지 않아요")
+  await ctx.reply(embed=embed, mention_author=False)
 
 
 @client.command()
